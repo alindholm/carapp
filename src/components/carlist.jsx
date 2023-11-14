@@ -4,6 +4,8 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
 import { Button } from "@mui/material";
 import {Snackbar} from "@mui/material";
+import AddCar from "./AddCar";
+import EditCar from "./EditCar";
 
 export default function Carlist() {
      //states
@@ -28,6 +30,10 @@ export default function Carlist() {
         <Button size="small" color="error" onClick={() => deleteCar(params)}>
             Delete
         </Button>,
+        width:120
+    },
+    {
+        cellRenderer: params=><EditCar params={params} updateCar={updateCar}/>,
         width:120
     }
   ]
@@ -54,7 +60,25 @@ export default function Carlist() {
             })
             .catch(error => console.error(error));
     }
+    const addCar=(car)=> {
+        //REST API CALL
+        fetch(rest_url, {
+            method: 'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify(car) 
+        })
+        .then(response=> {
+            if(response.ok)
+            getCars();
+            else
+                alert('something went wrong')
+        })
+        .catch(err=> unstable_composeClasses.error(err))
+
+    }
     return(
+        <>
+        <AddCar addCar={addCar}/>
         <div className="ag-theme-material"
         style={{height: '700px', width: '70%', margin: 'auto'}}>
             <AgGridReact 
@@ -70,5 +94,6 @@ export default function Carlist() {
             message={msg}
             onClose={()=> setOpen(false)} />
         </div>
+        </>
     )
 }
